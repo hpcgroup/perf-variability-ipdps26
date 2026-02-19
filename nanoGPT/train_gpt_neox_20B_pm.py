@@ -8,7 +8,7 @@ wandb_run_name='gpt2-124M'
 
 # these make the total batch size be ~0.5M
 # 12 batch size * 1024 block size * 5 gradaccum * 8 GPUs = 491,520
-batch_size = 1
+batch_size = 8
 block_size = 512
 gradient_accumulation_steps = 1 * 256 #per_gpu x num_gpus
 
@@ -21,7 +21,7 @@ bias = False # do we use bias inside LayerNorm and Linear layers?
 
 # adamw optimizer
 learning_rate = 1e-4 # max learning rate
-max_iters = 600000 # total number of training iterations
+max_iters = 30 # total number of training iterations
 
 # axonn params
 G_intra_d=16
@@ -31,8 +31,8 @@ compile=False # disable compile for axonn
 gradient_checkpointing=True
 
 # this makes total number of tokens be 300B
-max_iters = 100
-lr_decay_iters = 100
+max_iters = 30
+lr_decay_iters = 600000
 
 # eval stuff
 eval_interval = 1000

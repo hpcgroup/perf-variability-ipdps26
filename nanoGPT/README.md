@@ -1,33 +1,55 @@
-# nanoGPT Setup Instructions
+# nanoGPT README
+For more detailed installation parameters, please refer to [nanoGPT install guide](https://github.com/axonn-ai/nanoGPT).
 
-## Clone the Repository
 
-```sh
-git clone https://github.com/axonn-ai/nanoGPT.git
-```
+## Perlmutter Setup
 
-## Create Python Environment
+### Setup steps
 
-```sh
-./scripts/create_python_env_perlmutter.sh
-```
+1. Clone the Repository
+    ```sh
+    git clone https://github.com/axonn-ai/nanoGPT.git
+    cd nanoGPT
+    ```
 
-> Note: You may need to modify the path and torch version in `create_python_env_perlmutter.sh`.
+2.  Create Python Environment
+    ```sh
+    ./scripts/create_python_env_perlmutter.sh
+    ```
+    > Note: You may need to modify the path and torch version in `create_python_env_perlmutter.sh`. In this paper, the torch version is 2.5.0.
 
-## Load PyTorch Module
+3. Activate the Environment
+    ```sh
+    source path_to_nanogptENV/bin/activate
+    ```
 
-```sh
-module load pytorch/2.0.1
-```
+4. Download Data
+    ```sh
+    python nanoGPT/data/openwebtext/prepare.py
+    ```
 
-## Activate the Environment
+## Frontier Setup
 
-```sh
-source path_to_nanogptENV/bin/activate
-```
+### Setup steps
 
-## Download Data
+1. Clone the Repository
+    ```sh
+    git clone https://github.com/axonn-ai/nanoGPT.git
+    cd nanoGPT
+    ```
 
-```sh
-python nanoGPT/data/openwebtext/prepare.py
-```
+2.  Create Python Environment
+    ```sh
+    ./scripts/create_python_env_frontier.sh
+    ```
+    > Note: You may need to modify the WKSPC path and torch version in `create_python_env_frontier.sh`.
+
+4. Activate the Environment
+    ```sh
+    source path_to_nanogptENV/bin/activate
+    ```
+
+5. Download Data
+    ```sh
+    python data/openwebtext/prepare.py
+    ```
