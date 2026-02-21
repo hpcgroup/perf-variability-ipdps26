@@ -1,0 +1,72 @@
+From b3174fa6af04857a4003d9c5c237944de9aa065f Mon Sep 17 00:00:00 2001
+From: Keshav Pradeep <32313895+keshprad@users.noreply.github.com>
+Date: Mon, 24 Mar 2025 17:27:57 -0400
+Subject: [PATCH v1 1/2] detect rccl_main_kernel as communication
+
+---
+ hta/utils/utils.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/hta/utils/utils.py b/hta/utils/utils.py
+index 8fce8b5..8daa98c 100644
+--- a/hta/utils/utils.py
++++ b/hta/utils/utils.py
+@@ -53,7 +53,7 @@ def normalize_path(path: str) -> str:
+     return normalized_path
+ 
+ 
+-NCCL_KERNEL_RE = re.compile(r"^nccl.*Kernel")
++NCCL_KERNEL_RE = re.compile(r"^(ncclKernel|ncclDevKernel|rccl_main_kernel)")
+ 
+ 
+ def is_comm_kernel(name: str) -> bool:
+@@ -66,7 +66,7 @@ def is_comm_kernel(name: str) -> bool:
+     Returns:
+         A boolean indicating if the kernel is a communication kernel.
+     """
+-    return NCCL_KERNEL_RE.match(name) is not None
++    return NCCL_KERNEL_RE.search(name) is not None
+ 
+ 
+ MEMORY_KERNEL_RE = re.compile(r"(^Memcpy)|(^Memset)|(^dma)")
+-- 
+2.25.1
+
+
+From 9341f91fc4d6e1c4b9bab4ba215c87f3eb4ab2a3 Mon Sep 17 00:00:00 2001
+From: Keshav Pradeep <32313895+keshprad@users.noreply.github.com>
+Date: Mon, 24 Mar 2025 17:28:55 -0400
+Subject: [PATCH v1 2/2] add code to append rccl collective name to end of
+ traceEvent name
+
+---
+ hta/common/trace_parser.py | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/hta/common/trace_parser.py b/hta/common/trace_parser.py
+index a8180a5..30cb48a 100644
+--- a/hta/common/trace_parser.py
++++ b/hta/common/trace_parser.py
+@@ -358,6 +358,7 @@ def _parse_trace_dataframe_json(
+     local_symbol_table: TraceSymbolTable = TraceSymbolTable()
+     if "traceEvents" in trace_record:
+         df = pd.DataFrame(trace_record["traceEvents"])
++        df = df.apply(append_rccl_collective_type_to_name, axis=1)
+         round_down_time_stamps(df)
+ 
+         # assign an index to each event
+@@ -368,6 +369,11 @@ def _parse_trace_dataframe_json(
+ 
+     return meta, df, local_symbol_table
+ 
++def append_rccl_collective_type_to_name(row):
++    if row['name'] == "rccl_main_kernel(ncclDevComm*, unsigned long, ncclWork*)" and \
++        "Collective name" in row['args']:
++        row['name'] = f"{row['name']}_{row['args']['Collective name']}"
++    return row
+ 
+ # @profile
+ def _parse_trace_dataframe_ijson(
+-- 
+2.25.1
+
